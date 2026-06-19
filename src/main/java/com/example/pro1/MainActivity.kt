@@ -22,6 +22,9 @@ import com.google.android.material.bottomappbar.BottomAppBar.FabAnchorMode
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.coroutines.selects.select
+import android.app.DatePickerDialog
+import java.util.Calendar
+import android.widget.Toast
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,10 +35,10 @@ class MainActivity : AppCompatActivity() {
     lateinit var fab: FloatingActionButton
     lateinit var todoText: EditText
     lateinit var addBtn: Button
-
     lateinit var db: ProjectDB
-
     lateinit var bottomLayout: LinearLayout
+    lateinit var memberText: EditText
+    lateinit var projectDeadlineText: EditText
 
     var gId: Int = 0
 
@@ -54,13 +57,46 @@ class MainActivity : AppCompatActivity() {
         todoText = findViewById(R.id.todo_text)
         addBtn = findViewById(R.id.add_btn)
         fab = findViewById(R.id.fab)
+        memberText = findViewById(R.id.member_text)
+        projectDeadlineText = findViewById(R.id.project_deadline_text)
+
+        projectDeadlineText.setOnClickListener {
+
+            val calendar = Calendar.getInstance()
+
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+            val dialog = DatePickerDialog(
+                this,
+                { _, selectedYear, selectedMonth, selectedDay ->
+
+                    val dateText =
+                        String.format(
+                            "%04d-%02d-%02d",
+                            selectedYear,
+                            selectedMonth + 1,
+                            selectedDay
+                        )
+
+                    projectDeadlineText.setText(dateText)
+                },
+                year,
+                month,
+                day
+            )
+
+            dialog.show()
+        }
+
 
         //recyclerView 설정
         recyclerView = findViewById(R.id.recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         //adapter 설정
-        adapter = ProjectAdapter()
+        adapter = ProjectAdapter(db)
         adapter.setProject(projectList)
 
         //adapter 적용
@@ -79,23 +115,42 @@ class MainActivity : AppCompatActivity() {
             viewMode("FAB")
 
             var text = todoText.text.toString()
+            var members = memberText.text.toString()
+            var deadline = projectDeadlineText.text.toString()
 
-            //ADD면 등록 아니면 수정
-            if(addBtn.text.toString() == "ADD") {//등록
+//ADD면 등록 아니면 수정
+            if(addBtn.text.toString() == "프로젝트 추가" || addBtn.text.toString() == "ADD") {
 
-                //데이터 담기
-                val project = ProjectModel(0,text)
+                if (
+                    text.isNotEmpty() &&
+                    members.isNotEmpty() &&
+                    deadline.isNotEmpty()
+                ) {
 
-                //할 일 추가
-                db.addProject(project)
+                    val project = ProjectModel(
+                        0,
+                        text,
+                        members,
+                        deadline
+                    )
 
-                //조회 및 리셋
-                selectReset("ADD")
-            } else{ //수정
-                //할 일 수정
- //               db.updateTask(gId, text)
+                    db.addProject(project)
 
-                //조회 및 리셋
+                    memberText.setText("")
+
+                    selectReset("ADD")
+
+                } else {
+
+                    Toast.makeText(
+                        this,
+                        "프로젝트명, 팀원, 마감일을 모두 입력하세요",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+            } else {
+
                 selectReset("UPDATE")
             }
 
@@ -219,6 +274,11 @@ class MainActivity : AppCompatActivity() {
 */
     }//onCreate()
 
+    override fun onResume() {
+        super.onResume()
+        selectData()
+    }
+
     /**
      * 조회
      */
@@ -245,6 +305,8 @@ class MainActivity : AppCompatActivity() {
 
         //할일 입력 초기화
         todoText.setText("")
+        memberText.setText("")
+        projectDeadlineText.setText("")
 
         //등록이 아니면 등록으로 변경
         if(type != "ADD"){

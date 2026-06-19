@@ -14,7 +14,7 @@ class ProjectDB(context: Context) :
     companion object {
 
         private const val DATABASE_NAME = "project.db"
-        private const val DATABASE_VERSION = 1
+        private const val DATABASE_VERSION = 4
 
         private const val TABLE_NAME = "project"
 
@@ -27,7 +27,9 @@ class ProjectDB(context: Context) :
         val query =
             "CREATE TABLE $TABLE_NAME (" +
                     "$ID INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "$NAME TEXT)"
+                    "$NAME TEXT," +
+                    "members TEXT," +
+                    "deadline TEXT)"
 
         db?.execSQL(query)
     }
@@ -63,7 +65,9 @@ class ProjectDB(context: Context) :
             val project =
                 ProjectModel(
                     cursor.getInt(0),
-                    cursor.getString(1)
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    cursor.getString(3)
                 )
 
             projectList.add(project)
@@ -81,12 +85,15 @@ class ProjectDB(context: Context) :
         val cv = ContentValues()
 
         cv.put(NAME, project.name)
+        cv.put("members", project.members)
+        cv.put("deadline", project.deadline)
 
         db!!.insert(
             TABLE_NAME,
             null,
             cv
         )
+
     }
 
     fun deleteProject(id: Int) {

@@ -4,13 +4,73 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/project_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="28sp"/>
+        android:textSize="24sp"/>
+
+    <TextView
+        android:id="@+id/project_members"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:paddingBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/progress_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="진행률 0%"
+        android:textSize="18sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/urgent_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textColor="#D32F2F"
+        android:padding="8dp"/>
+
+    <EditText
+        android:id="@+id/my_name_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="내 이름 입력"/>
+
+    <EditText
+        android:id="@+id/task_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="할 일을 입력하세요"/>
+
+    <EditText
+        android:id="@+id/member_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="담당자"/>
+
+    <EditText
+        android:id="@+id/date_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="마감일 선택"
+        android:focusable="false"/>
+
+    <Button
+        android:id="@+id/add_task_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="일정 추가"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/task_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
 </LinearLayout>
